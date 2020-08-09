@@ -4,9 +4,14 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.View;
+
+import androidx.constraintlayout.solver.widgets.Rectangle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,30 +20,38 @@ public class GameSurface extends View {
 
     private Paint paint;
     private Bitmap blackPiece, whitePiece;
-    private float x = 0;
-    private float y = 0;
-    Canvas canvas;
-    private boolean imageShow = false;
-    public int clickCount = 0;
     List<GamePiece> list = new ArrayList<>();
+    private GameBoard board = new GameBoard();
 
-    public GameSurface(Context context, AttributeSet attrs){
+    public GameSurface(Context context, AttributeSet attrs) {
         super(context, attrs);
         paint = new Paint();
         blackPiece = BitmapFactory.decodeResource(getResources(), R.drawable.blackpiece);
         whitePiece = BitmapFactory.decodeResource(getResources(), R.drawable.whitepiece);
     }
 
-    public void drawImage(float x, float y){
-        imageShow = true;
-        clickCount = clickCount + 1;
-        this.x = x;
-        this.y = y;
+    public void playPiece(float x, float y) {
+        GamePiece gamePiece = new GamePiece();
+
+        Point point = board.alignPiece(x, y);
+
+        gamePiece.x = point.x;
+        gamePiece.y = point.y;
+
+        if (list.size() % 2 == 0) {
+            gamePiece.isWhite = true;
+            gamePiece.color = whitePiece;
+        } else {
+            gamePiece.isWhite = false;
+            gamePiece.color = blackPiece;
+        }
+
+        list.add(gamePiece);
         invalidate();
     }
 
     @Override
-    public void onDraw(Canvas canvas){
+    public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if(imageShow) {
             GamePiece gamePiece = new GamePiece();
@@ -56,15 +69,9 @@ public class GameSurface extends View {
                 canvas.drawBitmap(list.get(clickCount-i).color, list.get(clickCount-i).x, list.get(clickCount-i).y, null);
             }
 
+            canvas.drawBitmap(gamePiece.color, src, destRectangle, null);
+
         }
-    }
-
-    public void save(List<GamePiece> gamePieces, GamePiece gamePiece){
-        gamePieces.add(gamePiece);
-    }
-
-    public int getClickCount(){
-        return clickCount;
     }
 
 }

@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -20,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     private float y;
     private GameSurface gameSurface;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,22 +29,17 @@ public class MainActivity extends AppCompatActivity {
 
         gameSurface = (GameSurface) findViewById(R.id.game_surface);
 
-         gameSurface.setOnTouchListener(new View.OnTouchListener() {
+        gameSurface.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public boolean onTouch(View view, MotionEvent motionEvent){
+            public boolean onTouch(View view, MotionEvent motionEvent) {
                 if (motionEvent.getActionMasked() == MotionEvent.ACTION_DOWN) {
                     x = motionEvent.getX();
                     y = motionEvent.getY();
-                    gameSurface.drawImage(x-200, y-200);
-
+                    gameSurface.playPiece(x, y);
                 }
-
                 return false;
             }
         });
-
-
-
 
     }
 }
