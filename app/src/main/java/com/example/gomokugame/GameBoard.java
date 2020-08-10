@@ -7,17 +7,12 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.util.AttributeSet;
-import android.view.View;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class GameBoard {
 
     private int space = 120;
     private int numOfPiecesPlayed;
-    public String winner;
+    public String winner = "";
     private Bitmap blackPiece, whitePiece;
     GamePiece[][] piecesOnBoard = new GamePiece[16][9];
 
@@ -26,55 +21,34 @@ public class GameBoard {
         this.blackPiece = blackPiece;
     }
 
-    public String checkWinner(int xIndex, int yIndex){
+    public boolean checkWinner(int xIndex, int yIndex, int dirX, int dirY){
         GamePiece gamePiece = piecesOnBoard[yIndex][xIndex];
 
-        for (int startIndex = xIndex-4; startIndex < xIndex; startIndex++) {
+        for (int i=0; i < 5; i++) {
+            int startXIndex = xIndex+(i-4)*dirX;
+            int startYIndex = yIndex+(i-4)*dirY;
             int numInRow = 0;
-            for (int currentIndex = startIndex; currentIndex < 5+startIndex; currentIndex++) {
-                if (currentIndex < 0 || currentIndex >= piecesOnBoard[0].length) {
+            for(int j = 0; j<5; j++) {
+                int curXIndex = startXIndex + j*dirX;
+                int curYIndex = startYIndex + j*dirY;
+                if (curXIndex < 0 || curXIndex >= piecesOnBoard[0].length || curYIndex < 0 || curYIndex >= piecesOnBoard.length){
                     break;
                 }
-                if (piecesOnBoard[yIndex][currentIndex] == null) {
+                GamePiece gp = piecesOnBoard[curYIndex][curXIndex];
+                if(gp == null){
                     break;
                 }
-                if (piecesOnBoard[yIndex][currentIndex].isWhite != gamePiece.isWhite) {
+                if (gp.isWhite != gamePiece.isWhite){
                     break;
                 }
                 numInRow++;
-                if (numInRow == 5){
-                    if (gamePiece.isWhite){
-                        return "player1";
-                    } else {
-                        return "player2";
-                    }
-                }
+            }
+            if (numInRow == 5){
+                return true;
             }
         }
 
-        for (int startIndex = yIndex-4; startIndex<yIndex; startIndex++){
-            int numInRow = 0;
-            for (int currentIndex = startIndex; currentIndex < 5+startIndex; currentIndex++) {
-                if (currentIndex < 0 || currentIndex >= piecesOnBoard[0].length) {
-                    continue;
-                }
-                if (piecesOnBoard[currentIndex][xIndex] == null) {
-                    break;
-                }
-                if (piecesOnBoard[currentIndex][xIndex].isWhite != gamePiece.isWhite) {
-                    break;
-                }
-                numInRow++;
-                if (numInRow == 5){
-                    if (gamePiece.isWhite){
-                        return "player1";
-                    } else {
-                        return "player2";
-                    }
-                }
-            }
-        }
-        return "none";
+        return false;
     }
 
     public void playPiece(float x, float y) {
@@ -103,7 +77,13 @@ public class GameBoard {
             piecesOnBoard[yIndex][xIndex] = gamePiece;
         }
 
-        winner = checkWinner(xIndex, yIndex);
+        if (checkWinner(xIndex, yIndex, 1, 0) || checkWinner(xIndex, yIndex, 0, 1) || checkWinner(xIndex, yIndex, 1, 1) || checkWinner(xIndex, yIndex, 1,-1)){
+            if (gamePiece.isWhite){
+                winner = "player1";
+            } else {
+                winner = "player2";
+            }
+        }
     }
 
 
