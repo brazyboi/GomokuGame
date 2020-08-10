@@ -33,6 +33,10 @@ public class GameSurface extends View {
         invalidate();
     }
 
+    public String getWinner(){
+        return board.winner;
+    }
+
     @Override
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
